@@ -43,12 +43,14 @@ enum {
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 static bool     blink_enable      = true;
+bool     flag      = true;
 
 void led_blinking_task(void);
 void cdc_task(void);
 
 /*------------- MAIN -------------*/
 int main(void) {
+  flag = false;
   board_init();
 
   // init device stack on configured roothub port
