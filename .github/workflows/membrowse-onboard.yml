@@ -50,7 +50,7 @@ jobs:
           key: ${{ matrix.port }}-${{ matrix.board }}
 
       - name: Run Membrowse Onboard Action
-        uses: membrowse/membrowse-action/onboard-action@v1
+        uses: membrowse/membrowse-action/onboard-action@main
         with:
           target_name: ${{ matrix.port }}-${{ matrix.board }}-${{ matrix.example }}
           num_commits: ${{ github.event.inputs.num_commits }}

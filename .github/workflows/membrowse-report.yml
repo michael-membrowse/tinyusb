@@ -69,7 +69,7 @@ jobs:
         if: steps.check-elf.outputs.exists == 'true'
         id: membrowse
         continue-on-error: true
-        uses: membrowse/membrowse-action@v1
+        uses: membrowse/membrowse-action@main
         with:
           target_name: ${{ matrix.port }}-${{ matrix.board }}-${{ matrix.example }}
           elf: cmake-build/cmake-build-${{ matrix.board }}/device/${{ matrix.example }}/${{ matrix.example }}.elf
@@ -85,7 +85,7 @@ jobs:
         if: steps.check-elf.outputs.exists == 'false'
         id: membrowse-identical
         continue-on-error: true
-        uses: membrowse/membrowse-action@v1
+        uses: membrowse/membrowse-action@main
         with:
           target_name: ${{ matrix.port }}-${{ matrix.board }}-${{ matrix.example }}
           identical: true
