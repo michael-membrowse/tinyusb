@@ -31,7 +31,7 @@ jobs:
 
       - name: Post Membrowse PR comment
         if: steps.download.outcome == 'success'
-        uses: membrowse/membrowse-action/comment-action@v1
+        uses: membrowse/membrowse-action/comment-action@main
         with:
           json_files: 'reports/*.json'
         env:
