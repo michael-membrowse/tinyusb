@@ -294,7 +294,7 @@ ${MEMBROWSE_EXE} report ${OPTION} $<TARGET_FILE:${TARGET}> \"$ld_scripts\"")
 
     add_custom_target(${TARGET}-membrowse-upload
       DEPENDS ${TARGET}
-      COMMAND bash -lc "${MEMBROWSE_CMD} --upload --github --target-name ${BOARD}-${TARGET} --api-key $ENV{MEMBROWSE_API_KEY}"
+      COMMAND bash -lc "${MEMBROWSE_CMD} --upload --github --target-name ${BOARD}-${TARGET} --api-key $ENV{MEMBROWSE_API_KEY} --api-url $ENV{MEMBROWSE_API_URL}"
       VERBATIM
       )
 
