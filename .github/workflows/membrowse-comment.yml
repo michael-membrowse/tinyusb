@@ -26,6 +26,7 @@ jobs:
         uses: membrowse/membrowse-action/comment-action@v1
         with:
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
+          api_url: ${{ vars.MEMBROWSE_API_URL }}
           commit: ${{ github.event.workflow_run.head_sha }}
           comment_template: .github/membrowse_pr_message.j2
         env:

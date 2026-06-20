@@ -49,6 +49,9 @@ void cdc_task(void);
 
 /*------------- MAIN -------------*/
 int main(void) {
+  static int arr[10] = {0};
+  arr[4]++;
+
   board_init();
 
   // init device stack on configured roothub port
