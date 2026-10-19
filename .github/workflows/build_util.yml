@@ -144,6 +144,9 @@ jobs:
         continue-on-error: true
         env:
           MEMBROWSE_API_KEY: ${{ secrets.MEMBROWSE_API_KEY }}
+          # unset on hathach/tinyusb (uploads go to api.membrowse.com); a fork sets it
+          # to point the whole flow at another MemBrowse deployment
+          MEMBROWSE_API_URL: ${{ vars.MEMBROWSE_API_URL }}
           ARG: ${{ matrix.arg }}
         run: |
           # --ci-pinned-boards-only: families without a CI board were built as compile
@@ -159,7 +162,7 @@ jobs:
             # auth need these to see the actual event, and GITHUB_SHA to report the
             # right commit. GITHUB_EVENT_PATH points outside the $PWD mount, so mount
             # it too (read-only); guard it since local/non-Actions runs leave it unset.
-            DOCKER_ENV=(-e MEMBROWSE_API_KEY="$MEMBROWSE_API_KEY" -e CI="$CI"
+            DOCKER_ENV=(-e MEMBROWSE_API_KEY="$MEMBROWSE_API_KEY" -e MEMBROWSE_API_URL="$MEMBROWSE_API_URL" -e CI="$CI"
                         -e GITHUB_ACTIONS="$GITHUB_ACTIONS" -e GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME"
                         -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME"
                         -e GITHUB_EVENT_PATH="$GITHUB_EVENT_PATH")

@@ -3,6 +3,8 @@
 
 MEMBROWSE_API_KEY is read from the environment at run time (only with --upload),
 never at CMake configure time, and redacted from the logged command line.
+MEMBROWSE_API_URL, when set, picks the MemBrowse deployment the report goes to
+(the CLI's own default, api.membrowse.com, otherwise).
 """
 import argparse
 import os
@@ -105,6 +107,9 @@ def build_membrowse_cmd(args, commands_text):
         key = os.environ.get('MEMBROWSE_API_KEY')
         if key:
             cmd += ['--api-key', key]
+        url = os.environ.get('MEMBROWSE_API_URL')
+        if url:
+            cmd += ['--api-url', url]
 
     return cmd
 

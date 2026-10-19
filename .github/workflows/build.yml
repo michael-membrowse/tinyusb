@@ -447,6 +447,7 @@ jobs:
         continue-on-error: true
         env:
           MEMBROWSE_API_KEY: ${{ secrets.MEMBROWSE_API_KEY }}
+          MEMBROWSE_API_URL: ${{ vars.MEMBROWSE_API_URL }}
           LEGS: ${{ needs.check-paths.outputs.code_changed == 'true' && needs.set-matrix.outputs.membrowse_identical || needs.set-matrix.outputs.membrowse_all }}
         run: |
           # one build.py call per leg, its words split as argv (never through a shell), 8 at

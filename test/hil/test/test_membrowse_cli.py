@@ -187,6 +187,7 @@ class ReportCli(unittest.TestCase):
                                            'print("STUB_CWD:" + os.getcwd())\n')
         env = dict(os.environ, PATH=stub_dir + os.pathsep + os.environ.get('PATH', ''))
         env.pop('MEMBROWSE_API_KEY', None)
+        env.pop('MEMBROWSE_API_URL', None)
         env.update(env_extra or {})
         return subprocess.run([sys.executable, SCRIPT, 'report',
                                '--target-name', 'board/example'] + args,
@@ -246,6 +247,18 @@ class ReportCli(unittest.TestCase):
             stub_line = [l for l in r.stdout.splitlines() if l.startswith('STUB_ARGV:')]
             self.assertTrue(stub_line, r.stdout)
             self.assertIn('dummysecret', stub_line[0])
+
+    def test_upload_goes_to_the_deployment_named_by_the_environment(self):
+        # MEMBROWSE_API_URL (a repository variable in CI) retargets the upload, so a
+        # fork can exercise the whole flow against a test deployment; unset, the
+        # CLI's own default stands and no --api-url is passed.
+        with tempfile.TemporaryDirectory() as tmp:
+            r = self._upload(tmp, {'MEMBROWSE_API_URL': 'https://core-test.example/'})
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn('--api-url https://core-test.example/', r.stdout)
+            r = self._upload(tmp, {})
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertNotIn('--api-url', r.stdout)
 
     def test_no_ld_scripts_without_override_errors_cleanly_no_traceback(self):
         with tempfile.TemporaryDirectory() as tmp:
