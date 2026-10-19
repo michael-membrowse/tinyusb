@@ -461,9 +461,11 @@ def bloaty_sizes(elf, filters):
 # all_label: what the engine's 'all' total sums (totals of different engines are
 # not comparable); install: how to get its tool when `sizes` raises FileNotFoundError
 Engine = collections.namedtuple('Engine', 'sizes all_label install')
-MEMBROWSE_CI_VERSION = '1.2.12'  # every CI install pins this; attribution can differ across versions
+# every CI install pins this; attribution can differ across versions. A commit of
+# membrowse-action main until a release carries its repo-relative source files.
+MEMBROWSE_CI_SPEC = 'membrowse@git+https://github.com/membrowse/membrowse-action.git@ba5639583f99f4ce012ee6d6af56a1be03c88195'
 ENGINES = {
-    'membrowse': Engine(membrowse_sizes, 'all symbols', f'`pip install membrowse=={MEMBROWSE_CI_VERSION}`'),
+    'membrowse': Engine(membrowse_sizes, 'all symbols', f'`pip install {MEMBROWSE_CI_SPEC}`'),
     'linkermap': Engine(linkermap_sizes, 'all input sections',
                         '`python3 tools/get_deps.py tools/linkermap`'),
     'bloaty': Engine(bloaty_sizes, 'all accounted sections',

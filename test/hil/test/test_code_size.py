@@ -729,7 +729,8 @@ class MembrowseSizes(unittest.TestCase):
 
     @staticmethod
     def pins(text):
-        return re.findall(r'pip3? install [^\n]*?\bmembrowse\b(==[^\s\'"]+)?', text.replace('\\\n', ' '))
+        return re.findall(r'pip3? install [^\n]*?\bmembrowse\b(==[^\s\'"]+|@git\+[^\s\'"]+)?',
+                          text.replace('\\\n', ' '))
 
     def test_pins_reports_unpinned_installs_in_every_shell_form(self):
         self.assertEqual(self.pins('pip3 install membrowse\n'
@@ -737,16 +738,17 @@ class MembrowseSizes(unittest.TestCase):
                                    'python -m pip install membrowse\n'), ['', '', ''])
 
     def test_every_ci_install_pins_the_version_the_install_hint_names(self):
-        self.assertEqual(self.pins("pip install membrowse==1.2.12rc1 'x'; pip install membrowse >/dev/null"),
-                         ['==1.2.12rc1', ''])
+        self.assertEqual(self.pins("pip install membrowse==1.2.12rc1 'x'; pip install membrowse >/dev/null; "
+                                   "pip install membrowse@git+https://x/membrowse-action.git@abc"),
+                         ['==1.2.12rc1', '', '@git+https://x/membrowse-action.git@abc'])
         installs = []
         for root, _, files in os.walk(os.path.join(REPO, '.github')):
             for name in files:
                 with open(os.path.join(root, name), errors='replace') as f:
                     installs += self.pins(f.read())
         self.assertGreaterEqual(len(installs), 4)
-        self.assertEqual(set(installs), {f'=={sd.MEMBROWSE_CI_VERSION}'})
-        self.assertIn(f'membrowse=={sd.MEMBROWSE_CI_VERSION}', sd.ENGINES['membrowse'].install)
+        self.assertEqual(set(installs), {sd.MEMBROWSE_CI_SPEC[len('membrowse'):]})
+        self.assertIn(sd.MEMBROWSE_CI_SPEC, sd.ENGINES['membrowse'].install)
 
 
 class BloatySizes(unittest.TestCase):
