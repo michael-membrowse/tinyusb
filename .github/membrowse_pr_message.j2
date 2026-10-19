@@ -36,3 +36,29 @@
 {% else %}
 No memory changes detected across {{ targets | length }} target{{ 's' if targets | length != 1 else '' }}.{% if dashboard_url %} [View Project Dashboard →]({{ dashboard_url }}){% endif %}
 {% endif -%}
+
+{#- --- Changes by file across builds, like the code-size comment --- -#}
+{% macro span(s) -%}
+{% if s.builds == 0 %}—{% elif s.min == s.max %}{{ s.min_str }}{% else %}{{ s.min_str }} → {{ s.max_str }}{% endif %}
+{%- endmacro %}
+{% set file_rows = file_changes[:20] %}
+{% if file_changes %}
+
+### Changes by file ({{ targets_with_file_changes }} of {{ targets | length }} builds changed a file)
+
+Min → max change across the builds the file changed in, and the build of each end. Sizes follow the region a symbol lives in at run time, so initialized data counts as RAM only; — marks no change in that memory.
+
+| File | Flash Δ | RAM Δ | Flash Δ min build | Flash Δ max build | RAM Δ min build | RAM Δ max build |
+|------|--------:|------:|-------------------|-------------------|-----------------|-----------------|
+{% for row in file_rows -%}
+| {{ row.name }} | {{ span(row.flash) }} | {{ span(row.ram) }} | {{ row.flash.min_build or '' }} | {{ row.flash.max_build or '' }} | {{ row.ram.min_build or '' }} | {{ row.ram.max_build or '' }} |
+{% endfor %}
+{% if file_changes | length > file_rows | length %}
+… and {{ file_changes | length - file_rows | length }} more files.
+{% endif %}
+{% set ns = namespace(other=0) %}
+{% for row in file_changes %}{% if row.other.builds %}{% set ns.other = ns.other + 1 %}{% endif %}{% endfor %}
+{% if ns.other %}
+{{ ns.other }} of these files also changed in regions that are neither flash nor RAM.
+{% endif %}
+{% endif %}
