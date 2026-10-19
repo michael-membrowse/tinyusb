@@ -44,6 +44,9 @@ enum {
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 static bool     blink_enable      = true;
 
+// scratch buffer the memory report should show as new RAM and code
+static volatile uint8_t scratch_buffer[256];
+
 void led_blinking_task(void);
 void cdc_task(void);
 
@@ -59,6 +62,7 @@ int main(void) {
 
   while (1) {
     tud_task(); // tinyusb device task
+    scratch_buffer[board_millis() & 0xFF]++;
     led_blinking_task();
 
     cdc_task();
