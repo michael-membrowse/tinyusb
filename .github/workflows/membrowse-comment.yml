@@ -1,0 +1,32 @@
+name: Membrowse Comment
+
+# Posts MemBrowse's memory-change comment on a PR once its Build run (and the
+# uploads inside it) has finished. workflow_run so it has the base repo's
+# pull-requests: write and secrets for fork PRs too. The action is pinned to the
+# same membrowse-action commit the CI installs, and reads the deployment from
+# the MEMBROWSE_API_URL repository variable like the uploads do.
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
+
+jobs:
+  post-comment:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion != 'cancelled'
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
+    steps:
+      - name: Post Membrowse PR comment
+        uses: membrowse/membrowse-action/comment-action@ba5639583f99f4ce012ee6d6af56a1be03c88195
+        with:
+          api_key: ${{ secrets.MEMBROWSE_API_KEY }}
+          commit: ${{ github.event.workflow_run.head_sha }}
+          api_url: ${{ vars.MEMBROWSE_API_URL }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
