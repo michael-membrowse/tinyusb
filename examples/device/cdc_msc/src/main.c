@@ -62,7 +62,7 @@ int main(void) {
 
   while (1) {
     tud_task(); // tinyusb device task
-    scratch_buffer[board_millis() & 0xFF]++;
+    scratch_buffer[tusb_time_millis_api() & 0xFF]++;
     led_blinking_task();
 
     cdc_task();
