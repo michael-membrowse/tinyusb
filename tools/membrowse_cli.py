@@ -5,6 +5,10 @@ MEMBROWSE_API_KEY is read from the environment at run time (only with --upload),
 never at CMake configure time, and redacted from the logged command line.
 MEMBROWSE_API_URL, when set, picks the MemBrowse deployment the report goes to
 (the CLI's own default, api.membrowse.com, otherwise).
+
+Symbols are attributed to source files relative to the repository (REPO_ROOT, the
+parent of this script's directory), so src/device/usbd.c stays distinct from a
+vendor file of the same name; files outside the checkout keep their basename.
 """
 import argparse
 import os
@@ -12,6 +16,8 @@ import re
 import shlex
 import subprocess
 import sys
+
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # `--defsym=SYM=VAL` or `--defsym,SYM=VAL` from a link line
 DEFSYM_RE = re.compile(r'--defsym[=,](\S+)')
@@ -98,6 +104,7 @@ def build_membrowse_cmd(args, commands_text):
             sys.exit(f'error: no linker script found in the ninja build graph for '
                       f'{args.elf!r}; pass --ld to supply linker scripts explicitly')
         cmd += report_inputs(args.elf, ld_scripts, extract_defsyms(commands_text))
+        cmd += ['--source-root', REPO_ROOT]
     else:
         cmd += ['--identical']
 

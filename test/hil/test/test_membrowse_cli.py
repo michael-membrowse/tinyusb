@@ -110,7 +110,14 @@ class BuildMembrowseCmd(unittest.TestCase):
             open(elf, 'w').close()
             commands = 'cc -Wl,--script=/a/b.ld -o x.elf\n'
             cmd = cli.build_membrowse_cmd(self._args(elf), commands)
-            self.assertEqual(cmd, ['membrowse', 'report', elf, '/a/b.ld'])
+            self.assertEqual(cmd, ['membrowse', 'report', elf, '/a/b.ld',
+                                   '--source-root', cli.REPO_ROOT])
+            # the checkout, not the build dir: ESP-IDF's docker legs mount it at /project
+            self.assertTrue(os.path.isfile(os.path.join(cli.REPO_ROOT, 'tools', 'membrowse_cli.py')))
+
+    def test_identical_report_names_no_source_root(self):
+        cmd = cli.build_membrowse_cmd(self._args('/no/such.elf', ld=['/fake.ld']), '')
+        self.assertEqual(cmd, ['membrowse', 'report', '--identical'])
 
     def test_map_file_appended_when_present(self):
         with tempfile.TemporaryDirectory() as tmp:
