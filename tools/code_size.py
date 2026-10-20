@@ -463,7 +463,7 @@ def bloaty_sizes(elf, filters):
 Engine = collections.namedtuple('Engine', 'sizes all_label install')
 # every CI install pins this; attribution can differ across versions. A commit of
 # membrowse-action main until a release carries its repo-relative source files.
-MEMBROWSE_CI_SPEC = 'membrowse@git+https://github.com/membrowse/membrowse-action.git@ba5639583f99f4ce012ee6d6af56a1be03c88195'
+MEMBROWSE_CI_SPEC = 'membrowse@git+https://github.com/membrowse/membrowse-action.git@0f8e6e0a444bfc6af9c9377a43e071b0f74f43f1'
 ENGINES = {
     'membrowse': Engine(membrowse_sizes, 'all symbols', f'`pip install {MEMBROWSE_CI_SPEC}`'),
     'linkermap': Engine(linkermap_sizes, 'all input sections',

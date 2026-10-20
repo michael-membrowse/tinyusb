@@ -4,29 +4,50 @@ name: Membrowse Comment
 # uploads inside it) has finished. workflow_run so it has the base repo's
 # pull-requests: write and secrets for fork PRs too. The action is pinned to the
 # same membrowse-action commit the CI installs, and reads the deployment from
-# the MEMBROWSE_API_URL repository variable like the uploads do.
+# the MEMBROWSE_API_URL repository variable like the uploads do. The template
+# keeps the comment to the ten targets that moved most: the default one lists
+# every target, and with ~1000 of them the body outgrows a GitHub comment.
+# workflow_dispatch re-posts for a commit whose reports are already uploaded.
 on:
   workflow_run:
     workflows: ["Build"]
     types:
       - completed
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit SHA whose reports to summarize
+        required: true
+      pr_number:
+        description: PR to comment on
+        required: true
 
 jobs:
   post-comment:
     runs-on: ubuntu-latest
     if: >
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion != 'cancelled'
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.event == 'pull_request' &&
+       github.event.workflow_run.conclusion != 'cancelled')
     permissions:
       contents: read
       actions: read
       pull-requests: write
     steps:
+      - name: Checkout the comment template
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: .github/membrowse_pr_message.j2
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
       - name: Post Membrowse PR comment
-        uses: membrowse/membrowse-action/comment-action@ba5639583f99f4ce012ee6d6af56a1be03c88195
+        uses: membrowse/membrowse-action/comment-action@0f8e6e0a444bfc6af9c9377a43e071b0f74f43f1
         with:
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
-          commit: ${{ github.event.workflow_run.head_sha }}
+          commit: ${{ inputs.commit || github.event.workflow_run.head_sha }}
+          pr_number: ${{ inputs.pr_number }}
           api_url: ${{ vars.MEMBROWSE_API_URL }}
+          comment_template: .github/membrowse_pr_message.j2
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
