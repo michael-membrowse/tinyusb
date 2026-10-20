@@ -42,7 +42,7 @@ jobs:
           persist-credentials: false
 
       - name: Post Membrowse PR comment
-        uses: membrowse/membrowse-action/comment-action@b8490a28be921c22fed6cf1998496f86b63297a0
+        uses: membrowse/membrowse-action/comment-action@0f8e6e0a444bfc6af9c9377a43e071b0f74f43f1
         with:
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
           commit: ${{ inputs.commit || github.event.workflow_run.head_sha }}

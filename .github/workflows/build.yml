@@ -441,7 +441,7 @@ jobs:
       - name: Install membrowse
         # pinned to a commit of membrowse-action main (its repo-relative source files
         # are in no release yet), so no new commit runs unreviewed
-        run: 'pip install membrowse@git+https://github.com/membrowse/membrowse-action.git@b8490a28be921c22fed6cf1998496f86b63297a0'
+        run: 'pip install membrowse@git+https://github.com/membrowse/membrowse-action.git@0f8e6e0a444bfc6af9c9377a43e071b0f74f43f1'
 
       - name: Membrowse identical upload
         continue-on-error: true
